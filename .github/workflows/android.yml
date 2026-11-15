@@ -21,7 +21,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.8'
+          gradle-version: '8.9'
 
       - name: Unzip and Setup Project Structure
         run: |
@@ -53,8 +53,7 @@ jobs:
             echo "=== الهيكلة بعد الفك والنقل ==="
             ls -la
           else
-            echo "خطأ: لم يتم العثور على ملف ZIP في المستودع!"
-            exit 1
+            echo "تنبيه: لم يتم العثور على ملف ZIP، سيتم اعتماد الملفات الموجودة مباشرة."
           fi
 
       - name: Build Debug APK Safely
