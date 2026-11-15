@@ -1,4 +1,4 @@
-name: Build ZIP Project APK
+name: Build Uploaded ZIP Project
 
 on:
   push:
@@ -23,33 +23,39 @@ jobs:
         with:
           gradle-version: '8.8'
 
-      - name: Extract ZIP and Arrange Project
+      - name: Unzip and Setup Project Structure
         run: |
           echo "=== الملفات الموجودة في الجذر حالياً ==="
           ls -la
 
-          # البحث تلقائياً عن أي ملف مضغوط (ZIP) تم رفعه
+          # البحث عن ملف الـ ZIP الذي رفعته تلقائياً
           ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" | head -n 1)
           
           if [ -n "$ZIP_FILE" ]; then
             echo "تم العثور على ملف الـ ZIP: $ZIP_FILE"
-            mkdir -p unzipped_folder
-            unzip -o "$ZIP_FILE" -d unzipped_folder
+            mkdir -p temp_unzipped
+            unzip -q "$ZIP_FILE" -d temp_unzipped
             
-            # الدخول إلى المجلد الداخلي الناتج عن فك الضغط ونقل محتوياته للجذر الرئيسي
-            EXTRACTED_SUB=$(find unzipped_folder -mindepth 1 -maxdepth 1 -type d | head -n 1)
-            if [ -n "$EXTRACTED_SUB" ]; then
-              echo "نقل الملفات من المجلد: $EXTRACTED_SUB إلى الجذر الرئيسي"
+            # استخراج محتويات المجلد الداخلي للـ ZIP ووضعها في الجذر الرئيسي
+            SUB_DIR=$(find temp_unzipped -mindepth 1 -maxdepth 1 -type d | head -n 1)
+            
+            if [ -n "$SUB_DIR" ]; then
+              echo "نقل محتويات المجلد: $SUB_DIR إلى الجذر الرئيسي للمشروع"
               shopt -s dotglob
-              mv "$EXTRACTED_SUB"/* .
+              cp -r "$SUB_DIR"/* .
+              shopt -u dotglob
+            else
+              shopt -s dotglob
+              cp -r temp_unzipped/* .
               shopt -u dotglob
             fi
+            
+            echo "=== الهيكلة بعد الفك والنقل ==="
+            ls -la
           else
-            echo "تنبيه: لم يتم العثور على ملف ZIP، سيتم اعتماد الملفات الموجودة مباشرة."
+            echo "خطأ: لم يتم العثور على ملف ZIP في المستودع!"
+            exit 1
           fi
-
-          echo "=== الملفات بعد الترتيب ==="
-          ls -la
 
       - name: Build Debug APK Safely
         run: |
