@@ -28,9 +28,29 @@ jobs:
           mkdir -p app/src/main/java/com/example/bluechat
           mkdir -p app/src/main/res/drawable
 
-          cp AndroidManifest.xml app/src/main/AndroidManifest.xml
-          cp EliteEngine.kt app/src/main/java/com/example/bluechat/EliteEngine.kt
-          cp MainActivity.kt app/src/main/java/com/example/bluechat/MainActivity.kt
+          # نسخ ملف المانيست مع دعم كافة احتمالات الأحرف
+          if [ -f AndroidManifest.xml ]; then
+            cp AndroidManifest.xml app/src/main/AndroidManifest.xml
+          elif [ -f androidmanifest.xml ]; then
+            cp androidmanifest.xml app/src/main/AndroidManifest.xml
+          else
+            echo "خطأ: ملف AndroidManifest.xml غير موجود في الجذر الرئيسي!"
+            exit 1
+          fi
+
+          # نسخ ملف EliteEngine.kt
+          if [ -f EliteEngine.kt ]; then
+            cp EliteEngine.kt app/src/main/java/com/example/bluechat/EliteEngine.kt
+          elif [ -f eliteengine.kt ]; then
+            cp eliteengine.kt app/src/main/java/com/example/bluechat/EliteEngine.kt
+          fi
+
+          # نسخ ملف MainActivity.kt
+          if [ -f MainActivity.kt ]; then
+            cp MainActivity.kt app/src/main/java/com/example/bluechat/MainActivity.kt
+          elif [ -f mainactivity.kt ]; then
+            cp mainactivity.kt app/src/main/java/com/example/bluechat/MainActivity.kt
+          fi
 
           if [ -f icon.png ]; then
             cp icon.png app/src/main/res/drawable/ic_launcher.png
@@ -89,8 +109,8 @@ jobs:
                   applicationId "com.example.bluechat"
                   minSdk 26
                   targetSdk 34
-                  versionCode 7
-                  versionName "7.0"
+                  versionCode 8
+                  versionName "8.0"
               }
               compileOptions {
                   sourceCompatibility JavaVersion.VERSION_17
