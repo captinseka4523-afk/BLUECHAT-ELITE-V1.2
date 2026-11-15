@@ -1,4 +1,4 @@
-name: Build Original Project APK
+name: Build Android APK
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -23,11 +23,17 @@ jobs:
         with:
           gradle-version: '8.8'
 
-      - name: Build Debug APK
-        run: gradle assembleDebug
+      - name: Build Debug APK Safely
+        run: |
+          if [ -f "./gradlew" ]; then
+            chmod +x gradlew
+            ./gradlew assembleDebug
+          else
+            gradle assembleDebug
+          fi
 
       - name: Upload Ready APK
         uses: actions/upload-artifact@v4
         with:
-          name: BlueChat-Elite-Original-APK
+          name: BlueChat-Elite-APK
           path: app/build/outputs/apk/debug/app-debug.apk
